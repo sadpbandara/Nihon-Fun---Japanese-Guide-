@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nihongo Fun - Japanese Learning App</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4A90E2">
+</head>
+<body>
+
+    <div class="app-container">
+        <nav class="sidebar" id="mainNav">
+            <div class="logo">🇯🇵 Nihongo Fun</div>
+            <button class="nav-btn active" data-target="dashboard">
+                <span class="icon">🏠</span> <span class="text">බිනුෂ</span>
+            </button>
+            <button class="nav-btn" data-target="roadmap">
+                <span class="icon">🗺️</span> <span class="text">Roadmap (මාර්ග සිතියම)</span>
+            </button>
+            <button class="nav-btn" data-target="jft">
+                <span class="icon">🎓</span> <span class="text">JFT 1000 (විභාගය)</span>
+            </button>
+            <button class="nav-btn" data-target="katakana">
+                 <span class="icon">🔠</span> <span class="text">Katakana (කතකනා)</span>
+            </button>
+            <button class="nav-btn" data-target="my-lessons">
+                <span class="icon">📺</span> <span class="text">මගේ පාඩම් (My Lessons)</span>
+            </button>
+            <button class="nav-btn" data-target="learn">
+                <span class="icon">📚</span> <span class="text">Learn (ඉගෙනගන්න)</span>
+            </button>
+            <button class="nav-btn" data-target="practice">
+                <span class="icon">🎮</span> <span class="text">Practice (පුහුණුව)</span>
+            </button>
+            <button class="nav-btn" data-target="pronouns">
+                <span class="icon">🧭</span> <span class="text">Pronouns (සර්වනාම)</span>
+            </button>
+            <button class="nav-btn" data-target="settings">
+                <span class="icon">⚙️</span> <span class="text">Settings (සැකසුම්)</span>
+            </button>
+            
+        </nav>
+
+        <main class="content-area">
+            
+            <section id="dashboard" class="page active">
+                <header class="top-bar">
+                    <h1>ආයුබෝවන්! (Welcome!)</h1>
+                    <div class="stats-badge"><span id="xp-display">0</span> XP</div>
+                </header>
+                
+                <div class="dashboard-grid">
+                    <div class="card hero-card">
+                        <h2>Today's Goal</h2>
+                        <div class="progress-ring" id="daily-progress">
+                            <span class="progress-text">0%</span>
+                        </div>
+                        <button class="btn-primary" onclick="app.router.navigate('practice')">Continue Learning</button>
+                    </div>
+
+                    <div class="card stats-card">
+                        <h3>Your Progress</h3>
+                        <ul>
+                            <li>🔥 Streak: <strong id="streak-display">1 Day</strong></li>
+                            <li>📖 Words Learned: <strong id="words-display">0</strong></li>
+                            <li>🎯 Quiz Accuracy: <strong id="accuracy-display">0%</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <!-- My Video Lessons Section -->
+            <section id="my-lessons" class="page">
+                <header class="top-bar">
+                    <h1>📺 මගේ වීඩියෝ පාඩම්</h1>
+                </header>
+                
+                <div class="card" style="border: 2px solid #34495E;">
+                    <p class="text-muted" style="font-size: 1.1rem; margin-bottom: 0;">DP Education හරහා දිනපතා ඉගෙන ගන්නා වචන සහ වාක්‍ය රටා මෙතැනින් පුහුණු වන්න.</p>
+                </div>
+
+                <!-- Video Lessons Grid -->
+                <div class="dashboard-grid mt-2" id="video-lessons-grid">
+                    <!-- JavaScript මගින් වීඩියෝ ලැයිස්තුව මෙහි හැදෙනු ඇත -->
+                </div>
+
+                <!-- Interactive Game Area for Videos (Hidden by Default) -->
+                <div id="video-game-area" class="card hidden" style="border: 3px solid #E74C3C; margin-top: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h2 id="vg-title" style="color: #E74C3C;">Video Practice</h2>
+                        <button class="btn-secondary" onclick="VideoEngine.closeGame()">✖ Close</button>
+                    </div>
+                    
+                    <div id="vg-dashboard" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+                        <button class="btn-primary" style="flex: 1; background: #3498DB;" onclick="VideoEngine.startVocabFlashcards()">1. වචන හඳුනාගනිමු</button>
+                        <button class="btn-primary" style="flex: 1; background: #16A085;" onclick="VideoEngine.startSentenceBuilder()">2. වාක්‍ය ගොඩනගමු</button>
+                        <button class="btn-primary" style="flex: 1; background: #8E44AD;" onclick="VideoEngine.startTenseConverter()">3. කාල භේදය (Tenses)</button>
+                    </div>
+
+                    <!-- Game Display Screen -->
+                    <div id="vg-screen" class="hidden text-center" style="background: var(--background); padding: 20px; border-radius: 12px;">
+                        <h3 id="vg-question-si" style="color: var(--secondary); margin-bottom: 15px;"></h3>
+                        <h1 id="vg-question-jp" class="japanese-large" style="font-size: 3rem; margin-bottom: 20px;"></h1>
+                        
+                        <!-- Options Grid -->
+                        <div id="vg-options" class="options-grid"></div>
+                        
+                        <!-- Dynamic Input for Sentence Building -->
+                        <div id="vg-slots" class="wb-slots-container mt-2"></div>
+                        <div id="vg-word-pool" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px;"></div>
+                        
+                        <button id="vg-next-btn" class="btn-primary hidden mt-2" style="background: #E74C3C;">Next ➔</button>
+                    </div>
+                </div>
+            </section>
+                <!-- Pronouns Section -->
+            <section id="pronouns" class="page">
+                <header class="top-bar">
+                    <h1>🧭 Ko-So-A-Do (සර්වනාම)</h1>
+                </header>
+
+                <div class="tabs" style="flex-wrap: wrap; gap: 5px;">
+                    <button class="tab-btn active" id="tab-pro-learn">1. සර්වනාම (Ko-So-A-Do)</button>
+                    <!-- අලුත් බොත්තම මෙතනට දමන්න -->
+                    <button class="tab-btn" id="tab-pro-vocab">2. අලුත් වචන (Vocab)</button> 
+                    <button class="tab-btn" id="tab-pro-game">3. තාර්කික ක්‍රීඩාව</button>
+                    <button class="tab-btn" id="tab-pro-100" style="background: #9b59b6; color: white; border-color: #9b59b6;">4. ප්‍රශ්න 100 (Levels)</button>
+                </div>
+
+                
+                <!-- Learn Area: Matrix Grid -->
+                <div id="content-pro-learn" class="tab-content active">
+                    <div class="card" style="border: 2px solid var(--primary); height: 100%;">
+                        <h2 class="pro-title" style="color: var(--primary); margin-bottom: 5px;">තාර්කික සටහන (Logic Matrix)</h2>
+                        <p class="pro-desc text-muted mb-2">අකුරක් මත ඔබා ශබ්දය අසන්න.</p>
+                        
+                        <!-- මෙතන තමයි අලුත් Grid එක හැදෙන්නේ -->
+                        <div id="pronoun-matrix" class="pronoun-matrix"></div>
+                        
+                    </div>
+                </div>
+
+                <!-- අලුත්: Vocab Learning and Game Area -->
+                <div id="content-pro-vocab" class="tab-content hidden">
+                    
+                    <!-- Dashboard for Vocab -->
+                    <div id="pv-dashboard">
+                        <div class="card text-center" style="border: 2px solid var(--primary);">
+                            <h2 style="color: var(--primary); margin-bottom: 10px;">📖 පාඩමට අවශ්‍ය වචන</h2>
+                            <p class="text-muted mb-2">ප්‍රශ්න 100 ක අභ්‍යාසයට පෙර මෙම වචන හොඳින් මතක තබාගන්න.</p>
+                            
+                            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
+                                <button class="btn-secondary" onclick="PronounVocabEngine.filterVocab('Items')">එදිනෙදා දේවල්</button>
+                                <button class="btn-secondary" onclick="PronounVocabEngine.filterVocab('Places')">ස්ථාන</button>
+                                <button class="btn-secondary" onclick="PronounVocabEngine.filterVocab('Positions')">පිහිටීම් (උඩ/යට)</button>
+                                <button class="btn-secondary" onclick="PronounVocabEngine.filterVocab('Adjectives')">විශේෂණ පද</button>
+                            </div>
+
+                            <!-- වචන පෙන්වන Grid එක -->
+                            <div id="pv-list" class="kana-grid" style="grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));"></div>
+
+                            <button class="btn-primary mt-2" style="background: #27AE60;" onclick="PronounVocabEngine.startFlashcards()">
+                                🎮 වචන මතකදැයි බලමු (Play Game) ➔
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Vocab Game Area -->
+                    <div id="pv-game-area" class="hidden">
+                        <button class="btn-secondary mb-2" onclick="PronounVocabEngine.showDashboard()" style="padding: 5px 15px; font-size: 0.9rem;">⬅ ආපසු (Back)</button>
+                        
+                        <div class="card text-center" style="border: 3px solid #27AE60;">
+                            <h3 style="color: #27AE60; margin-bottom: 15px;">Speed Flashcards</h3>
+                            
+                            <div style="background: var(--background); padding: 30px 15px; border-radius: 12px; margin-bottom: 20px;">
+                                <h1 id="pv-game-jp" class="japanese-large" style="font-size: 3.5rem; color: var(--text); margin-bottom: 5px;"></h1>
+                                <p id="pv-game-romaji" style="font-size: 1.2rem; color: var(--text-muted);"></p>
+                            </div>
+
+                            <button class="btn-audio mb-2" id="pv-game-audio">🔊 Listen</button>
+                            <p class="text-muted" style="font-size: 0.9rem;">සිංහල තේරුම තෝරන්න:</p>
+                            
+                            <div class="options-grid" id="pv-options-grid"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Area: Contextual Logic Builder -->
+                <div id="content-pro-game" class="tab-content hidden">
+                    <div class="card text-center" style="border: 3px solid var(--secondary);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h2 style="color: var(--secondary);">🧠 Situation Matcher</h2>
+                            <div id="pro-score" class="stats-badge" style="background: var(--primary);">0 XP</div>
+                        </div>
+                        
+                        <p class="text-muted" style="font-size: 1.1rem; margin-bottom: 20px;">පහත අවස්ථාවට ගැලපෙන පරිදි, මුලින්ම <b>දුර (Distance)</b> තෝරා ඉන්පසු <b>වර්ගය (Type)</b> තෝරන්න.</p>
+                        
+                        <div style="background: #FFF9E6; padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 2px dashed var(--secondary);">
+                            <h3 id="pro-situation-text" style="color: var(--text); font-size: 1.3rem; line-height: 1.5; margin: 0;"></h3>
+                        </div>
+
+                        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                            
+                            <!-- Step 1: Distance -->
+                            <div style="flex: 1; min-width: 250px; border: 2px solid var(--primary); padding: 15px; border-radius: 12px; background: var(--background);">
+                                <h4 style="color: var(--primary); margin-bottom: 15px;">පියවර 1: දුර (Root)</h4>
+                                <div class="options-grid" id="pro-root-options" style="margin-top:0;">
+                                    <button class="option-btn" onclick="PronounEngine.selectRoot('こ')">こ (Ko) <br><small class="text-muted">මට ළඟයි</small></button>
+                                    <button class="option-btn" onclick="PronounEngine.selectRoot('そ')">そ (So) <br><small class="text-muted">ඔයාට ළඟයි</small></button>
+                                    <button class="option-btn" onclick="PronounEngine.selectRoot('あ')">あ (A) <br><small class="text-muted">ඈතයි</small></button>
+                                    <button class="option-btn" onclick="PronounEngine.selectRoot('ど')">ど (Do) <br><small class="text-muted">ප්‍රශ්නයක්</small></button>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Category -->
+                            <div style="flex: 1; min-width: 250px; border: 2px solid #9b59b6; padding: 15px; border-radius: 12px; background: var(--background);">
+                                <h4 style="color: #9b59b6; margin-bottom: 15px;">පියවර 2: වර්ගය (Suffix)</h4>
+                                <div class="options-grid" id="pro-suffix-options" style="margin-top:0;">
+                                    <button class="option-btn" onclick="PronounEngine.selectSuffix('れ')">れ (re) <br><small class="text-muted">දෙයක්</small></button>
+                                    <button class="option-btn" onclick="PronounEngine.selectSuffix('の')">の (no) <br><small class="text-muted">නාම පදයක් එක්ක</small></button>
+                                    <button class="option-btn" onclick="PronounEngine.selectSuffix('こ')">こ (ko) <br><small class="text-muted">ස්ථානයක්</small></button>
+                                    <button class="option-btn" onclick="PronounEngine.selectSuffix('ちら')">ちら (chira) <br><small class="text-muted">දිශාව/පුද්ගලයා</small></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Result Display -->
+                        <div id="pro-result-area" class="hidden mt-2">
+                            <h1 id="pro-combined-word" class="japanese-large" style="font-size: 4rem; color: var(--success); margin: 15px 0;"></h1>
+                            <h2 id="pro-feedback-msg"></h2>
+                            <button id="pro-next-btn" class="btn-primary mt-2" style="background: var(--secondary); max-width: 300px;">ඊළඟ අවස්ථාව ➔</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="content-pro-100" class="tab-content hidden">
+            <!-- Level Selection Dashboard -->
+            <div id="pq-dashboard">
+                <div class="card text-center" style="border: 2px solid #9b59b6;">
+                    <h2 style="color: #9b59b6; margin-bottom: 10px;">🏆 සර්වනාම ප්‍රශ්න 100</h2>
+                    <p class="text-muted mb-2">ඔබගේ හැකියාව අනුව මට්ටමක් (Level) තෝරාගෙන පුහුණුව අරඹන්න.</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+                        <button class="btn-primary" style="background: #2ECC71;" onclick="PronounQuizEngine.startLevel('Easy')">
+                            🌱 Easy Level (හිස්තැන් පිරවීම)
+                        </button>
+                        <button class="btn-primary" style="background: #F5A623;" onclick="PronounQuizEngine.startLevel('Medium')">
+                            🌿 Medium Level (විශේෂණ සමග)
+                        </button>
+                        <button class="btn-primary" style="background: #E74C3C;" onclick="PronounQuizEngine.startLevel('Hard')">
+                            🔥 Hard Level (ස්ථාන සහ දිශාවන්)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Game Area -->
+            <div id="pq-game-area" class="hidden">
+                <button class="btn-secondary mb-2" onclick="PronounQuizEngine.showDashboard()" style="padding: 5px 15px; font-size: 0.9rem;">⬅ Back to Levels</button>
+                
+                <div class="card text-center" style="border: 3px solid #9b59b6;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 id="pq-level-title" style="color: #9b59b6; margin: 0;">Level: Easy</h3>
+                    </div>
+                    
+                    <div style="background: var(--background); padding: 25px 15px; border-radius: 12px; margin-bottom: 20px;">
+                        <!-- සිංහල තේරුම පෙන්වීම -->
+                        <p id="pq-sentence-si" style="color: var(--secondary); font-size: 1.2rem; font-weight: bold; margin-bottom: 15px;"></p>
+                        <!-- ජපන් ප්‍රශ්නය (හිස්තැන සමග) -->
+                        <h1 id="pq-question-jp" class="japanese-large" style="font-size: 2.2rem; color: var(--text);"></h1>
+                    </div>
+
+                    <p class="text-muted" style="font-size: 0.9rem;">නිවැරදි සර්වනාමය තෝරන්න:</p>
+                    
+                    <div class="options-grid" id="pq-options-grid"></div>
+                    
+                    <div style="margin-top: 20px;">
+                        <h3 id="pq-result-msg" style="margin-bottom: 15px;"></h3>
+                        <button id="pq-next-btn" class="btn-primary hidden" style="background: #9b59b6;" onclick="PronounQuizEngine.nextQuestion()">Next Question ➔</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </section>
+            <!-- Roadmap Section -->
+            <section id="roadmap" class="page">
+                <header class="top-bar">
+                    <h1>🗺️ භාෂා මාර්ග සිතියම (Learning Roadmap)</h1>
+                </header>
+                
+                <div class="card" style="border: 2px solid var(--primary);">
+                    <p class="text-muted" style="font-size: 1.1rem; margin-bottom: 0;">ජපන් අකුරු ඉගෙනීම පහත අනුපිළිවෙලට සිදු කිරීමෙන් ඉතා පහසුවෙන් සහ තාර්කිකව මතක තබා ගත හැක.</p>
+                </div>
+
+                <!-- Hiragana Path -->
+                <h2 style="color: var(--primary); margin-top: 30px; margin-bottom: 15px;">🌸 1. හිරඟන ගමන් මග (Hiragana Path)</h2>
+                <div class="roadmap-container hiragana-path">
+                    <div class="roadmap-step">
+                        <h3>1. හිරඟන හෝඩිය (Alphabet)</h3>
+                        <p class="text-muted">මූලික අකුරු 46 සහ දකුතෙන් (තිත්/රවුම්) අකුරු.</p>
+                        <button class="btn-secondary mt-2" onclick="app.router.navigate('learn'); document.getElementById('tab-hiragana').click();">පාඩමට යන්න ➔</button>
+                    </div>
+                    <div class="roadmap-step">
+                        <h3>2. බැඳී අකුරු (Yōon)</h3>
+                        <p class="text-muted">きゃ (kya), しゅ (shu) වැනි ශබ්ද නිර්මාණය.</p>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button class="btn-secondary mt-2" onclick="app.router.navigate('learn'); document.getElementById('tab-combined').click();">පාඩමට යන්න ➔</button>
+                            <button class="btn-primary mt-2" style="background: #F1C40F; width: auto;" onclick="app.router.navigate('practice'); QuizEngine.startCombinedQuiz();">පුහුණුවට යන්න ➔</button>
+                        </div>
+                    </div>
+                    <div class="roadmap-step">
+                        <h3>3. දීර්ඝ ස්වර (Long Vowels)</h3>
+                        <p class="text-muted">අ, ඉ, උ, එ, ඔ අකුරු එකතු වී ශබ්දය ඇදෙන ආකාරය (උදා: おかあさん).</p>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button class="btn-secondary mt-2" onclick="app.router.navigate('learn'); document.getElementById('tab-long-vowels').click();">පාඩමට යන්න ➔</button>
+                            <button class="btn-primary mt-2" style="background: #3498DB; width: auto;" onclick="app.router.navigate('practice'); QuizEngine.startLongVowelQuiz();">පුහුණුවට යන්න ➔</button>
+                        </div>
+                    </div>
+                    <div class="roadmap-step">
+                        <h3>4. ද්විත්ව ව්‍යංජන (Sokuon - っ)</h3>
+                        <p class="text-muted">කුඩා 'っ' මගින් ඊළඟ අකුරේ ශබ්දය දෙගුණ කිරීම (උදා: きっぷ - kippu).</p>
+                        <div style="background: var(--background); padding: 10px; border-radius: 8px; margin-top: 10px;">
+                            <span class="japanese-large" style="font-size: 1.5rem; color: var(--primary);">ざっし</span> (zasshi - සඟරාව)<br>
+                            <span class="japanese-large" style="font-size: 1.5rem; color: var(--primary);">がっこう</span> (gakkou - පාසල)
+                        </div>
+                        <button class="btn-primary mt-2" style="background: #E67E22; width: auto;" onclick="app.router.navigate('practice'); QuizEngine.startDoubleConsonantQuiz();">පුහුණුවට යන්න ➔</button>
+                    </div>
+                </div>
+
+                <!-- Katakana Path -->
+                <h2 style="color: var(--secondary); margin-top: 40px; margin-bottom: 15px;">🏙️ 2. කතකන ගමන් මග (Katakana Path)</h2>
+                <div class="roadmap-container katakana-path">
+                    <div class="roadmap-step">
+                        <h3>1. කතකන හෝඩිය (Alphabet)</h3>
+                        <p class="text-muted">විදේශීය වචන ලිවීමට භාවිතා කරන මූලික අකුරු.</p>
+                        <button class="btn-secondary mt-2" onclick="app.router.navigate('katakana'); document.getElementById('tab-kata-alphabet').click();">හෝඩියට යන්න ➔</button>
+                    </div>
+                    <div class="roadmap-step">
+                        <h3>2. බැඳී අකුරු (Yōon)</h3>
+                        <p class="text-muted">キャ (kya), シュ (shu) වැනි කතකන බැඳී ශබ්ද.</p>
+                        <button class="btn-secondary mt-2" onclick="app.router.navigate('katakana'); document.getElementById('tab-kata-journey').click();">Garden පුහුණුවට යන්න ➔</button>
+                    </div>
+                    <div class="roadmap-step">
+                        <h3>3. දීර්ඝ ස්වර (Long Vowels - ー)</h3>
+                        <p class="text-muted">කතකන වලදී ශබ්දය දිගු කිරීමට තිරස් ඉරක් (ー) භාවිතා වේ.</p>
+                        <div style="background: var(--background); padding: 10px; border-radius: 8px; margin-top: 10px;">
+                            <span class="japanese-large" style="font-size: 1.5rem; color: var(--secondary);">コーヒー</span> (Kōhī - කෝපි)<br>
+                            <span class="japanese-large" style="font-size: 1.5rem; color: var(--secondary);">スーパー</span> (Sūpā - සුපර් මාර්කට්)
+                        </div>
+                        <button class="btn-primary mt-2" style="background: #2980B9; width: auto;" onclick="app.router.navigate('practice'); QuizEngine.startKataLongVowelQuiz();">පුහුණුවට යන්න ➔</button>
+                    </div>
+                    <div class="roadmap-step">
+                        <h3>4. ද්විත්ව ව්‍යංජන (Sokuon - ッ)</h3>
+                        <p class="text-muted">කුඩා 'ッ' මගින් ඉංග්‍රීසි වචනවල ශබ්ද දෙගුණ කිරීම.</p>
+                        <div style="background: var(--background); padding: 10px; border-radius: 8px; margin-top: 10px;">
+                            <span class="japanese-large" style="font-size: 1.5rem; color: var(--secondary);">ベッド</span> (beddo - ඇඳ)<br>
+                            <span class="japanese-large" style="font-size: 1.5rem; color: var(--secondary);">カップ</span> (kappu - කෝප්පය)
+                        </div>
+                        <button class="btn-primary mt-2" style="background: #E67E22; width: auto;" onclick="app.router.navigate('practice'); QuizEngine.startDoubleConsonantQuiz();">පුහුණුවට යන්න ➔</button>
+                    </div>
+                </div>
+            </section>
+
+           <!-- Learn Section -->
+            <section id="learn" class="page">
+                <header class="top-bar">
+                    <h1>ඉගෙනගනිමු (Learn)</h1>
+                </header>
+                
+                <!-- අලුත් Tabs 4 -->
+                <div class="tabs" style="flex-wrap: wrap; gap: 5px;">
+                    <button class="tab-btn active" id="tab-hiragana">හිරගනා</button>
+                    <button class="tab-btn" id="tab-similar">පැටලෙන අකුරු</button>
+                    <button class="tab-btn" id="tab-long-vowels">දීර්ඝ අක්ෂර</button> <!-- අලුත් Tab එක -->
+                    <button class="tab-btn" id="tab-combined">බැඳී අකුරු</button>
+                    <button class="tab-btn" id="tab-vocab">වචන</button>
+                    <button class="tab-btn" id="tab-particles">නිපාත පද</button>
+                    <button class="tab-btn" id="tab-struct-vocab">වාක්‍ය හා වචන (100+)</button>
+                </div>
+
+                <!-- Hiragana Content -->
+                <div id="content-hiragana" class="tab-content active">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <p style="color: var(--text-muted)">අකුරක් මත Click කර ශබ්දය අසන්න.</p>
+                        <button id="btn-toggle-hints" class="btn-secondary" style="padding: 5px 10px; font-size: 0.9rem;">👁️ Show/Hide Hints</button>
+                    </div>
+                    <div class="kana-grid" id="hiragana-list"></div>
+                </div>
+
+                <!-- අලුත් Similar Kana Content -->
+                <div id="content-similar" class="tab-content hidden">
+                    <div class="card-grid" id="similar-list"></div>
+                </div>
+
+                <!-- Vocabulary Content -->
+                <div id="content-vocab" class="tab-content hidden">
+                    <div class="card-grid" id="vocab-list"></div>
+                </div>
+
+                <!-- Particles Content -->
+                <div id="content-particles" class="tab-content hidden">
+                    <div class="card-grid" id="particles-list"></div>
+                </div>
+                <!-- Long Vowels Content -->
+                <div id="content-long-vowels" class="tab-content hidden">
+                    <div class="card-grid" id="long-vowels-list"></div>
+                </div>
+                <!-- Combined Kana Content -->
+                <div id="content-combined" class="tab-content hidden">
+                    <div class="kana-grid" id="combined-list"></div>
+                </div>
+                <!-- වාක්‍ය ආකෘති සහ වචන Content -->
+                <div id="content-struct-vocab" class="tab-content hidden">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <p style="color: var(--text-muted)">තාර්කික ඉඟි මගින් වචන 100+ ක් මතක තබා ගනිමු.</p>
+                    </div>
+                    <div id="struct-vocab-list"></div>
+                </div>
+                <!-- අලුත්: Hiragana True Mastery Menu -->
+                <div class="card" style="border: 2px solid #27AE60;">
+                    <h2>6. Hiragana Mastery (ක්‍රියාකාරකම් 10)</h2>
+                    <p class="text-muted" style="margin-bottom: 15px;">කටපාඩම් නොකර, ක්‍රියාකාරකම් 10ක් හරහා අකුරු හඳුනාගැනීම මොළයට පුහුණු කරමු.</p>
+                    <button class="btn-primary" style="background: #27AE60;" onclick="MasteryEngine.startSession()">Start Mastery Training</button>
+                </div>
+            </section>
+
+            <!-- Practice Section -->
+            <section id="practice" class="page">
+                <header class="top-bar">
+                    <h1>පුහුණුව (Practice)</h1>
+                    <div id="quiz-score">Score: 0</div>
+                </header>
+
+                <!-- Practice Menu -->
+                <div id="practice-menu" class="dashboard-grid active">
+                    <div class="card">
+                        <h2>1. පේළියෙන් පේළියට ඉගෙනුම</h2>
+                        <p class="text-muted" style="margin-bottom: 15px;">මුලින්ම පේළියේ අකුරු පාඩම් කර පුහුණු වන්න.</p>
+                        <button class="btn-primary" onclick="QuizEngine.startProgressive()">Start Training</button>
+                    </div>
+                    <div class="card">
+                        <h2>2. මිශ්‍ර ප්‍රශ්නාවලිය</h2>
+                        <p class="text-muted" style="margin-bottom: 15px;">සියලුම අකුරු සහ වචන එකට මිශ්‍ර කර අහඹු ලෙස ලබා දෙන ප්‍රශ්න.</p>
+                        <button class="btn-primary" onclick="QuizEngine.startRandom()">Start Random Quiz</button>
+                    </div>
+                    <div class="card" style="border: 2px solid var(--secondary);">
+                        <h2>3. වචන ලියමු (Word Builder)</h2>
+                        <p class="text-muted" style="margin-bottom: 15px;">සිංහල තේරුමට ගැලපෙන ජපන් වචනය අකුරු ගලපා නිර්මාණය කරන්න.</p>
+                        <button class="btn-primary" style="background: var(--secondary);" onclick="QuizEngine.startWordBuilder()">Play Word Builder</button>
+                    </div>
+                    <div class="card" style="border: 2px solid #9b59b6;">
+                        <h2>4. නිපාත පුරවමු</h2>
+                        <p class="text-muted" style="margin-bottom: 15px;">වාක්‍යයේ හිස්තැනට වඩාත්ම ගැලපෙන නිපාත පදය (Particle) තෝරන්න.</p>
+                        <button class="btn-primary" style="background: #9b59b6;" onclick="QuizEngine.startParticleQuiz()">Start Particle Quiz</button>
+                    </div>
+                    <!-- අලුත් Similar Kana Practice Menu -->
+                    <div class="card" style="border: 2px solid #E74C3C;">
+                        <h2>5. පැටලෙන අකුරු (Quick Match)</h2>
+                        <p class="text-muted" style="margin-bottom: 15px;">එකිනෙකට සමාන අකුරු වෙන්කර හඳුනාගැනීමේ වේගවත් පුහුණුව.</p>
+                        <button class="btn-primary" style="background: #E74C3C;" onclick="QuizEngine.startSimilarKanaQuiz()">Start Practice</button>
+                    </div>
+                    <!-- අලුත් Long Vowels Practice Menu -->
+                    <div class="card" style="border: 2px solid #3498DB;">
+                        <h2>6. දීර්ඝ අක්ෂර පුහුණුව</h2>
+                        <p class="text-muted" style="margin-bottom: 15px;">දිගු ශබ්ද සහිත වචන නිවැරදිව හඳුනාගැනීමට පුහුණු වෙමු.</p>
+                        <button class="btn-primary" style="background: #3498DB;" onclick="QuizEngine.startLongVowelQuiz()">Start Practice</button>
+                    </div>
+                    <div class="card" style="border: 2px solid #F1C40F;">
+                    <h2>7. බැඳී අකුරු පුහුණුව</h2>
+                        <p class="text-muted" style="margin-bottom: 15px;">きゃ, しゅ, ちょ වැනි බැඳී අකුරු (Yōon) හඳුනාගනිමු.</p>
+                        <button class="btn-primary" style="background: #F1C40F;" onclick="QuizEngine.startCombinedQuiz()">Start Practice</button>
+                    </div>
+                    <div class="card" style="border: 2px solid #16A085;">
+                        <h2>8. වාක්‍ය හදමු (Sentence Builder)</h2>
+                        <p class="text-muted" style="margin-bottom: 15px;">JFT මට්ටමේ සම්පූර්ණ වාක්‍ය සහ ප්‍රශ්න නිර්මාණය කරමු.</p>
+                        <button class="btn-primary" style="background: #16A085;" onclick="QuizEngine.startSentenceBuilder()">Start Building</button>
+                    </div>
+                    <!-- ද්විත්ව ව්‍යංජන සහ කතකන දීර්ඝ ස්වර -->
+                    <div class="card" style="border: 2px solid #E67E22;">
+                        <h2>9. ද්විත්ව ව්‍යංජන (Sokuon - っ/ッ)</h2>
+                        <p class="text-muted" style="margin-bottom: 15px;">හිරගනා සහ කතකන වචනවල ද්විත්ව ශබ්ද හඳුනාගැනීම.</p>
+                        <button class="btn-primary" style="background: #E67E22;" onclick="QuizEngine.startDoubleConsonantQuiz()">Start Practice</button>
+                    </div>
+                    <div class="card" style="border: 2px solid #2980B9;">
+                        <h2>10. කතකන දීර්ඝ ස්වර (ー)</h2>
+                        <p class="text-muted" style="margin-bottom: 15px;">කතකන වචනවල ශබ්දය දිගු වන ආකාරය පුහුණු වෙමු.</p>
+                        <button class="btn-primary" style="background: #2980B9;" onclick="QuizEngine.startKataLongVowelQuiz()">Start Practice</button>
+                    </div>
+                    <div class="card" style="border: 2px solid #8E44AD;">
+                        <h2>11. Keyboard එකෙන් Type කරමු</h2>
+                        <p class="text-muted" style="margin-bottom: 15px;">ඔබේ Phone එකේ හෝ Computer එකේ Japanese Keyboard එක භාවිතා කර වචන Type කරන්න.</p>
+                        <button class="btn-primary" style="background: #8E44AD;" onclick="QuizEngine.startTypingPractice()">Start Typing</button>
+                    </div>
+                    <div class="card" style="border: 2px solid #D35400;">
+                        <h2>12. නව අක්ෂර (Extended Katakana)</h2>
+                        <p class="text-muted" style="margin-bottom: 15px;">විදේශීය වචන ලිවීමට යොදාගන්නා විශේෂ කතකන අක්ෂර (va, vi, ti, tu) හඳුනාගනිමු.</p>
+                        <button class="btn-primary" style="background: #D35400;" onclick="QuizEngine.startExtendedKatakanaQuiz()">Start Practice</button>
+                    </div>
+
+                </div>
+
+                <!-- Training Intro Screen -->
+                <div id="training-intro" class="card hidden text-center">
+                    <h2>පේළිය <span id="current-row-num">1</span> පාඩම් කරමු!</h2>
+                    <p class="text-muted mb-2">පහත අකුරු මතක තබා ගන්න. ඉන්පසු ප්‍රශ්න වලට මුහුණ දෙන්න.</p>
+                    <div id="training-row-chars" class="kana-grid" style="margin: 20px 0;"></div>
+                    <button class="btn-primary" onclick="QuizEngine.startProgressiveQuestions()">දැන් ප්‍රශ්න වලට යන්න ➔</button>
+                </div>
+
+                <!-- Quiz Question Area -->
+                <div class="quiz-container card hidden" id="quiz-area">
+                    <div id="quiz-progress-text" style="color: var(--primary); font-weight: bold; margin-bottom: 10px;"></div>
+                    <h2 id="quiz-question" class="japanese-large" style="font-size: 4rem;"></h2>
+                    <p id="quiz-hint" class="hint-text"></p>
+                    <button class="btn-audio" id="btn-listen">🔊 Listen</button>
+                    
+                    <div class="options-grid" id="quiz-options"></div>
+                </div>
+                
+                
+                <!-- Word Builder Game Area (Advanced Learning Laboratory) -->
+                <div class="quiz-container card hidden" id="word-builder-area" style="border: 3px solid var(--secondary);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div style="color: var(--secondary); font-weight: bold; font-size: 1.2rem;">🧩 වචන ගොඩනගමු (Word Builder)</div>
+                        <div id="wb-mastery-badge" class="stats-badge" style="background: var(--text-muted);">New</div>
+                    </div>
+                    
+                    <!-- Target Area -->
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h2 id="wb-sinhala" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></h2>
+                        
+                        <!-- Reveal Controls -->
+                        <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                            <button id="wb-toggle-jp" class="btn-secondary" style="padding: 5px 10px; font-size: 0.9rem;">👁 Japanese</button>
+                            <button id="wb-toggle-romaji" class="btn-secondary" style="padding: 5px 10px; font-size: 0.9rem;">👁 Romaji</button>
+                            <button id="wb-listen-btn" class="btn-audio" style="margin: 0; padding: 5px 15px;">🔊 Audio</button>
+                            <button id="wb-hint-btn" class="btn-secondary" style="padding: 5px 10px; font-size: 0.9rem; border-color: #F1C40F; color: #F39C12;">💡 Hint</button>
+                        </div>
+
+                        <!-- Target Displays (Hidden by default) -->
+                        <div id="wb-target-jp" class="japanese-large hidden" style="font-size: 3rem; color: var(--text); margin-bottom: 5px;"></div>
+                        <div id="wb-target-romaji" class="hidden" style="font-size: 1.2rem; color: var(--text-muted); font-family: monospace; letter-spacing: 2px;"></div>
+                    </div>
+                    
+                    <!-- Building Slots -->
+                    <div id="wb-slots" class="wb-slots-container mt-2"></div>
+                    
+                    <hr style="border: 1px solid var(--border); margin: 20px 0;">
+
+                    <!-- Virtual Japanese Keyboard -->
+                    <div id="wb-keyboard-wrapper">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="font-weight: bold; color: var(--text-muted);">Keyboard</span>
+                            <div>
+                                <button id="wb-kb-hiragana" class="btn-secondary active" style="padding: 2px 8px; font-size: 0.8rem;">あ</button>
+                                <button id="wb-kb-katakana" class="btn-secondary" style="padding: 2px 8px; font-size: 0.8rem;">ア</button>
+                            </div>
+                        </div>
+                        <!-- Keyboard Grid -->
+                        <div id="wb-keyboard" class="kana-grid" style="grid-template-columns: repeat(5, 1fr); gap: 5px;">
+                            <!-- Keys will be injected here -->
+                        </div>
+                        <!-- Combined/Voiced Keys Toggle -->
+                        <div style="text-align: center; margin-top: 10px;">
+                            <button id="wb-kb-extra" class="btn-secondary" style="padding: 5px 10px; font-size: 0.8rem; border: none; background: transparent; text-decoration: underline;">Show Dakuten/Yōon (゛/ ゃ)</button>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div style="margin-top: 25px; display: flex; gap: 10px;">
+                        <button class="btn-danger" id="wb-clear-btn" style="flex: 1; background: var(--surface);">⌫ Clear</button>
+                        <button class="btn-success" id="wb-check-btn" style="flex: 2; background: var(--secondary); border-color: var(--secondary); color: white;">Check Answer</button>
+                    </div>
+
+                    <!-- Context/Example Area (Shown after correct answer) -->
+                    <div id="wb-context-area" class="hidden" style="margin-top: 20px; padding: 15px; background: #E8F8F5; border-radius: 12px; border: 1px solid #16A085;">
+                        <h4 style="color: #16A085; margin-bottom: 5px;">🌟 Example (උදාහරණයක්)</h4>
+                        <div id="wb-example-jp" class="japanese-large" style="font-size: 1.5rem; color: var(--text);"></div>
+                        <div id="wb-example-si" style="color: var(--text-muted); font-size: 1rem;"></div>
+                    </div>
+                </div>
+
+                <!-- Particle Quiz Area -->
+                <div class="quiz-container card hidden" id="particle-quiz-area">
+                    <div style="color: #9b59b6; font-weight: bold; margin-bottom: 10px;">නිපාත පදය තෝරන්න</div>
+                    <h2 id="pq-question" class="japanese-large" style="font-size: 2rem; line-height: 1.5; margin: 20px 0;"></h2>
+                    <p id="pq-meaning" class="hint-text mb-2" style="font-size: 1.2rem;"></p>
+                    <div class="options-grid" id="pq-options"></div>
+                </div>
+                <!-- Sentence Builder Area -->
+                <div class="quiz-container card hidden" id="sentence-builder-area">
+                    <div style="color: #16A085; font-weight: bold; margin-bottom: 10px;">ජපන් වාක්‍යය ගොඩනගන්න</div>
+                    <h2 id="sb-sinhala" style="font-size: 1.8rem; color: var(--primary); margin: 15px 0;"></h2>
+                    
+                    <!-- Mnemonic Hint Box -->
+                    <div style="background: #E8F8F5; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
+                        <p id="sb-hint" style="color: #16A085; font-size: 1.1rem; margin:0;">💡 ඉඟිය: ක්‍රියාපදය මතකද?</p>
+                    </div>
+                    
+                    <!-- Slots to drop words -->
+                    <div id="sb-slots" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; min-height: 60px;"></div>
+                    
+                    <hr style="margin: 20px 0; border: 1px solid var(--border);">
+                    
+                    <!-- Words to pick from -->
+                    <div id="sb-word-pool" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;"></div>
+
+                    <div style="margin-top: 25px; text-align: center;">
+                        <button class="btn-danger" onclick="QuizEngine.generateSentence()" style="padding: 10px; width: 48%;">Skip (මඟහරින්න)</button>
+                        <button class="btn-success" onclick="QuizEngine.checkSentenceBuilder()" style="padding: 10px; width: 48%; background: #16A085; color: white; border:none; border-radius: var(--radius); font-weight: bold;">Check (පරීක්ෂා කරන්න)</button>
+                    </div>
+                </div>
+                <!-- Native Keyboard Typing Area -->
+                <div class="quiz-container card hidden" id="typing-area" style="border: 3px solid #8E44AD;">
+                    <div style="color: #8E44AD; font-weight: bold; margin-bottom: 10px;">⌨️ Native Keyboard Practice</div>
+                    
+                    <h2 id="tp-sinhala" style="font-size: 2rem; color: var(--primary); text-align: center; margin: 15px 0;"></h2>
+                    
+                    <!-- Hints -->
+                    <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px;">
+                        <button id="tp-hint-audio" class="btn-audio" style="margin: 0; padding: 5px 15px;">🔊 Audio</button>
+                        <button id="tp-hint-romaji-btn" class="btn-secondary" style="padding: 5px 10px; font-size: 0.9rem;">👁 Romaji</button>
+                    </div>
+                    <div id="tp-romaji-display" class="hidden text-center" style="font-size: 1.2rem; color: var(--text-muted); font-family: monospace; letter-spacing: 2px; margin-bottom: 15px;"></div>
+
+                    <!-- The Actual Input Field -->
+                    <div style="text-align: center; margin: 20px 0;">
+                        <input type="text" id="tp-input" placeholder="Type in Japanese..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="width: 100%; max-width: 300px; font-size: 2rem; text-align: center; padding: 10px; border: 2px solid var(--border); border-radius: 8px; font-family: 'Yu Gothic', 'Meiryo', sans-serif;">
+                    </div>
+
+                    <!-- Controls -->
+                    <div style="margin-top: 25px; display: flex; gap: 10px;">
+                        <button class="btn-danger" onclick="QuizEngine.generateTypingQuestion()" style="flex: 1; background: var(--surface);">Skip</button>
+                        <button class="btn-success" id="tp-check-btn" style="flex: 2; background: #8E44AD; border-color: #8E44AD; color: white;">Check Answer</button>
+                    </div>
+                </div>
+                <!-- අලුත්: Mastery Activities Area -->
+                <div class="quiz-container card hidden" id="mastery-area">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div id="mastery-title" style="color: #27AE60; font-weight: bold;">Activity 01: Look & Listen</div>
+                        <div id="mastery-timer" class="hidden" style="color: var(--danger); font-weight: bold; font-size: 1.2rem;">⏱️ 30s</div>
+                    </div>
+                    
+                    <!-- පොදු ප්‍රශ්න පෙන්වන තිරය -->
+                    <div id="mastery-display-box" style="text-align: center; margin: 20px 0;">
+                        <h2 id="mastery-question" class="japanese-large" style="font-size: 5rem; margin-bottom: 10px;"></h2>
+                        <p id="mastery-subtitle" class="hint-text" style="font-size: 1.5rem;"></p>
+                        <button class="btn-audio" id="mastery-listen-btn" style="margin-top: 15px;">🔊 Listen</button>
+                    </div>
+
+                    <!-- පිළිතුරු ලබා දෙන බොත්තම් -->
+                    <div class="options-grid" id="mastery-options"></div>
+
+                    <!-- Memory Match Game එක සඳහා විශේෂිත Grid එක (සැඟවී ඇත) -->
+                    <div id="mastery-memory-grid" class="hidden" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px;">
+                        <!-- Cards JavaScript මගින් හැදේ -->
+                    </div>
+
+                    <!-- මීළඟට යන බොත්තම (Look & Listen වැනි දේට) -->
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button class="btn-primary hidden" id="mastery-next-btn" style="background: #27AE60;">Continue ➔</button>
+                    </div>
+                </div>
+
+                <!-- Result Message -->
+                <div id="quiz-result" class="hidden mt-2 text-center">
+                    <h2 id="result-message"></h2>
+                    <p id="result-word-display" class="japanese-large" style="margin:10px 0;"></p>
+                    <button class="btn-primary mt-2" id="btn-next">Next (ඊළඟ)</button>
+                </div>
+
+            </section>
+
+            <section id="settings" class="page">
+                <header class="top-bar">
+                    <h1>සැකසුම් (Settings)</h1>
+                </header>
+                <div class="card">
+                    <h2>Data Management</h2>
+                    <div class="button-group">
+                        <button class="btn-secondary" id="btn-export">Export Progress</button>
+                        <button class="btn-secondary" id="btn-import" onclick="document.getElementById('import-file').click()">Import Progress</button>
+                        <input type="file" id="import-file" style="display: none" accept=".json">
+                        <button class="btn-danger" id="btn-reset">Reset Progress</button>
+                    </div>
+                </div>
+                <div class="card mt-2">
+                    <h2>Theme</h2>
+                    <button class="btn-secondary" id="btn-theme">Toggle Dark Mode</button>
+                </div>
+            </section>
+            <section id="jft" class="page">
+                <header class="top-bar">
+                    <h1>🎓 JFT Words Mastery (1000)</h1>
+                    <div class="stats-badge" style="background:#8E44AD;">Level: <span id="jft-level-display">1</span></div>
+                </header>
+                
+                <!-- Level Selector (10 words per level) -->
+                <div id="jft-dashboard">
+                    <div class="card" style="border: 2px solid #8E44AD; margin-bottom: 20px;">
+                        <h2>ඔබේ ප්‍රගතිය (Progress)</h2>
+                        <p class="text-muted">වචන 10 න් 10 ට ඉගෙන ගනිමු. පැරණි වචනද අහඹු ලෙස මතක් කරවනු ඇත.</p>
+                        <div class="progress-ring" style="margin: 15px auto; border-color: #8E44AD;">
+                            <span class="progress-text" id="jft-progress-text">0/1000</span>
+                        </div>
+                    </div>
+                    <div class="card-grid" id="jft-levels-grid" style="grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));">
+                        <!-- Levels will be injected here -->
+                    </div>
+                </div>
+                <!-- JFT Learning Area (අලුත්) -->
+                <div id="jft-learn-area" class="hidden">
+                    <button class="btn-secondary mb-2" onclick="JFTEngine.goBack()">⬅ Back to Levels</button>
+                    <div class="card text-center" style="border: 3px solid #3498DB;">
+                        <h3 style="color: #3498DB; margin-bottom: 5px;">පාඩම් කරමු (Learn)</h3>
+                        <p class="text-muted mb-2">පහත වචනය සහ තේරුම හොඳින් මතක තබාගන්න.</p>
+                        
+                        <div style="margin: 20px 0; padding: 20px; background: var(--background); border-radius: 12px;">
+                            <h1 id="jft-learn-jp" class="japanese-large" style="font-size: 4rem; color: var(--primary);"></h1>
+                            <h3 id="jft-learn-kana" style="font-size: 1.5rem; color: var(--text-muted); margin-top: 10px;"></h3>
+                            <h2 id="jft-learn-si" style="font-size: 2rem; color: var(--secondary); margin-top: 15px;"></h2>
+                        </div>
+
+                        <button id="jft-learn-audio" class="btn-audio mb-2">🔊 Listen</button>
+                        
+                        <div style="margin-top: 20px;">
+                            <button id="jft-learn-next" class="btn-primary" style="background: #3498DB;">Next Word ➔</button>
+                            <button id="jft-learn-start-quiz" class="btn-primary hidden" style="background: #8E44AD;">Start Practice (පුහුණුවට යමු) ➔</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- JFT Game Area -->
+                <div id="jft-game-area" class="hidden">
+                    <button class="btn-secondary mb-2" onclick="JFTEngine.goBack()">⬅ Back to Levels</button>
+                    
+                    <div class="card text-center" style="border: 3px solid #8E44AD;">
+                        <h3 id="jft-game-title" style="color: #8E44AD; margin-bottom: 5px;">Activity 1: Flashcards</h3>
+                        <p id="jft-game-subtitle" class="text-muted mb-2">Listen and look at the meaning.</p>
+                        
+                        <div id="jft-question-box" style="margin: 20px 0; padding: 20px; background: var(--background); border-radius: 12px;">
+                            <h1 id="jft-q-large" class="japanese-large" style="font-size: 3rem;"></h1>
+                            <h3 id="jft-q-small" style="font-size: 1.5rem; color: var(--text-muted); margin-top: 10px;"></h3>
+                        </div>
+
+                        <button id="jft-btn-audio" class="btn-audio mb-2">🔊 Listen</button>
+                        
+                        <div id="jft-options-grid" class="options-grid"></div>
+                        
+                        <div id="jft-action-area" style="margin-top: 20px;">
+                            <button id="jft-btn-next" class="btn-primary" style="background: #8E44AD;">Next ➔</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Katakana Section -->
+            <section id="katakana" class="page">
+                <header class="top-bar">
+                    <h1>🔠 Katakana Mastery</h1>
+                </header>
+
+                <!-- Katakana Tabs -->
+                <div class="tabs" style="flex-wrap: wrap; gap: 5px;">
+                    <button class="tab-btn active" id="tab-kata-alphabet">හෝඩිය (Alphabet)</button>
+                    <button class="tab-btn" id="tab-kata-journey">Journey (ගමන)</button>
+                    <button class="tab-btn" id="tab-kata-extended">නව අක්ෂර (Extended)</button> <!-- අලුත් පේළිය -->
+                </div>
+                
+
+                <!-- 1. Full Alphabet Area (හදිස්සියට බලාගන්න) -->
+                <div id="content-kata-alphabet" class="tab-content active">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <p style="color: var(--text-muted)">අකුරක් මත Click කර ශබ්දය අසන්න.</p>
+                        <button id="btn-toggle-kata-full-hints" class="btn-secondary" style="padding: 5px 10px; font-size: 0.9rem;">👁️ Show/Hide Hints</button>
+                    </div>
+                    <div class="kana-grid" id="full-katakana-list"></div>
+                </div>
+
+                <!-- 2. Journey Area (Memory Games) -->
+                <div id="content-kata-journey" class="tab-content hidden">
+                    
+                    <!-- Memory Garden Dashboard -->
+                    <div id="kata-journey-dashboard">
+                        <div class="card" style="border: 2px solid #27AE60;">
+                            <h2>🌱 Memory Garden</h2>
+                            <p class="text-muted">අලුත් පේළි ඉගෙන ගන්න. පරණ පේළි වලට වතුර දාන්න අමතක කරන්න එපා!</p>
+                            <div id="kata-garden-grid" class="card-grid mt-2" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));">
+                                <!-- Trees will be generated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Learning / Observe Area -->
+                    <div id="kata-observe-area" class="hidden card text-center" style="border: 3px solid #2980B9;">
+                        <h2 id="kata-obs-title" style="color: #2980B9;">අලුත් පේළිය ඉගෙන ගනිමු</h2>
+                        <p class="text-muted mb-2">අකුරු මත Click කර ශබ්දය හොඳින් මතක තබා ගන්න.</p>
+                        <div id="kata-obs-chars" class="kana-grid" style="margin: 20px 0;"></div>
+                        <button class="btn-primary" style="background: #2980B9;" onclick="KataJourneyEngine.startQuiz()">දැන් පුහුණුවට යමු ➔</button>
+                    </div>
+
+                    <!-- Journey Quiz Area -->
+                    <div id="kata-quiz-area" class="hidden card text-center" style="border: 3px solid #E67E22;">
+                        <h3 id="kata-quiz-title" style="color: #E67E22; margin-bottom: 5px;">Training</h3>
+                        <div id="kata-hearts-display" style="font-size: 1.5rem; letter-spacing: 2px; margin-bottom: 15px;"></div>
+                        
+                        <div style="margin: 20px 0; padding: 30px; background: var(--background); border-radius: 12px;">
+                            <h1 id="kata-q-display" class="japanese-large" style="font-size: 5rem; margin: 0;"></h1>
+                        </div>
+
+                        <button id="kata-btn-audio" class="btn-audio mb-2 hidden">🔊 Listen</button>
+                        <div id="kata-options-grid" class="options-grid"></div>
+                        
+                        <div style="margin-top: 20px;">
+                            <button id="kata-btn-next" class="btn-primary hidden" style="background: #E67E22;">Next ➔</button>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- 3. Extended Katakana Area -->
+                <div id="content-kata-extended" class="tab-content hidden">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <p style="color: var(--text-muted)">විදේශීය ශබ්ද සඳහා භාවිතා වන නව අක්ෂර</p>
+                    </div>
+                    <div id="extended-katakana-list"></div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="storage.js"></script>
+    <script src="audio.js"></script>
+    <script src="app.js"></script>
+    <script src="quiz.js"></script>
+    <script src="jft_data.js"></script>
+    <script src="jft_engine.js"></script>
+    <script src="katakana_data.js"></script>
+    <script src="katakana_engine.js"></script>
+    <script src="video_lessons_data.js"></script>
+    <script src="video_engine.js"></script>
+    <script src="pronoun_vocab.js"></script>
+    <script src="pronoun_engine.js"></script>
+    <script src="pronoun_data.js"></script>
+    <script src="pronoun_quiz.js"></script>
+   
+</body>
+</html>

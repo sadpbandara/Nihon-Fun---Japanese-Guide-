@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Positional Vocabulary - ජපන් ස්ථානවාචී පද</title>
+    
+    <!-- Google Fonts for better Japanese and Sinhala text rendering -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+Sinhala:wght@400;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        jp: ['"Noto Sans JP"', 'sans-serif'],
+                        si: ['"Noto Sans Sinhala"', 'sans-serif'],
+                        en: ['"Poppins"', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#4F46E5', // Indigo
+                        secondary: '#EF4444', // Red (for the ball)
+                        box: '#3B82F6', // Blue (for the box)
+                        background: '#F8FAFC',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F8FAFC;
+        }
+        /* Common styles for the graphical elements */
+        .graphic-container {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            background-color: #F1F5F9;
+            border-radius: 12px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        .css-box {
+            position: absolute;
+            border-radius: 6px;
+        }
+        .css-ball {
+            position: absolute;
+            border-radius: 50%;
+            background-color: #EF4444;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="font-en text-slate-800 antialiased min-h-screen pb-12">
+
+    <header class="bg-white shadow-sm mb-8">
+        <div class="max-w-6xl mx-auto px-4 py-6 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-2">Japanese Positions</h1>
+            <p class="text-lg font-si text-slate-600">ජපන් භාෂාවේ ස්ථානවාචී පද (Positional Words)</p>
+        </div>
+    </header>
+
+    <!-- Main Container for Flashcards -->
+    <main class="max-w-6xl mx-auto px-4">
+        <div id="flashcards-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Flashcards will be injected here by JavaScript -->
+        </div>
+    </main>
+
+    <script>
+        // Data for the vocabulary cards
+        // Each entry contains text translations and CSS inline styles to position the box and ball
+        const vocabularyData = [
+            {
+                romaji: "ue",
+                hiragana: "うえ",
+                en: "on / upon",
+                si: "මත",
+                // Box lower, Ball on top
+                boxStyle: "top: 50px; left: 30px; width: 60px; height: 60px; background: #3B82F6;",
+                ballStyle: "top: 26px; left: 48px; width: 24px; height: 24px; z-index: 10;"
+            },
+            {
+                romaji: "shita",
+                hiragana: "した",
+                en: "under / below",
+                si: "යට / පහතින්",
+                // Box higher, Ball underneath
+                boxStyle: "top: 20px; left: 30px; width: 60px; height: 60px; background: #3B82F6; z-index: 10;",
+                ballStyle: "top: 80px; left: 48px; width: 24px; height: 24px; z-index: 5;"
+            },
+            {
+                romaji: "mae",
+                hiragana: "まえ",
+                en: "in front of",
+                si: "ඉදිරිපස",
+                // Box pushed back, Ball in front overlapping
+                boxStyle: "top: 25px; left: 30px; width: 60px; height: 60px; background: #3B82F6; z-index: 5;",
+                ballStyle: "top: 65px; left: 48px; width: 24px; height: 24px; z-index: 10; border: 2px solid white;"
+            },
+            {
+                romaji: "ushiro",
+                hiragana: "うしろ",
+                en: "behind / back",
+                si: "පිටුපස",
+                // Box in front, Ball hidden partially behind
+                boxStyle: "top: 35px; left: 25px; width: 60px; height: 60px; background: #3B82F6; z-index: 10;",
+                ballStyle: "top: 20px; left: 55px; width: 24px; height: 24px; z-index: 5;"
+            },
+            {
+                romaji: "soto",
+                hiragana: "そと",
+                en: "outside",
+                si: "පිටත",
+                // Box is an outline, Ball is clearly outside
+                boxStyle: "top: 30px; left: 45px; width: 60px; height: 60px; border: 4px solid #3B82F6; background: transparent;",
+                ballStyle: "top: 48px; left: 10px; width: 24px; height: 24px;"
+            },
+            {
+                romaji: "naka",
+                hiragana: "なか",
+                en: "inside",
+                si: "ඇතුලත",
+                // Box is an outline, Ball is perfectly inside
+                boxStyle: "top: 30px; left: 30px; width: 60px; height: 60px; border: 4px solid #3B82F6; background: transparent;",
+                ballStyle: "top: 48px; left: 48px; width: 24px; height: 24px;"
+            },
+            {
+                romaji: "soba",
+                hiragana: "そば",
+                en: "beside / near",
+                si: "අසල",
+                // Box shifted left, Ball next to it on the right
+                boxStyle: "top: 30px; left: 15px; width: 60px; height: 60px; background: #3B82F6;",
+                ballStyle: "top: 48px; left: 85px; width: 24px; height: 24px;"
+            }
+        ];
+
+        function playAudio(word) {
+            // Check if SpeechSynthesis is supported
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'ja-JP'; // Set language to Japanese
+                utterance.rate = 0.85; // Slightly slower for clear pronunciation
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.warn("Text-to-speech not supported in this browser.");
+            }
+        }
+
+        const container = document.getElementById('flashcards-container');
+
+        // Loop through data and generate HTML for each card
+        vocabularyData.forEach(item => {
+            const card = document.createElement('div');
+            card.className = "bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl";
+            
+            card.innerHTML = `
+                <!-- Graphic Container -->
+                <div class="graphic-container mb-6 shadow-inner">
+                    <div class="css-box" style="${item.boxStyle}"></div>
+                    <div class="css-ball" style="${item.ballStyle}"></div>
+                </div>
+
+                <!-- Text Content -->
+                <div class="flex-grow flex flex-col items-center w-full">
+                    <h2 class="text-5xl font-jp font-bold text-slate-800 mb-2">${item.hiragana}</h2>
+                    <p class="text-xl font-en text-primary font-semibold mb-4">${item.romaji}</p>
+                    
+                    <div class="w-full border-t border-slate-100 my-2 pt-2">
+                        <p class="text-slate-600 font-medium mb-1">${item.en}</p>
+                        <p class="text-slate-500 font-si text-sm">${item.si}</p>
+                    </div>
+                </div>
+
+                <!-- Audio Button -->
+                <button 
+                    onclick="playAudio('${item.hiragana}')"
+                    class="mt-4 flex items-center justify-center gap-2 w-full py-3 bg-slate-50 hover:bg-indigo-50 text-indigo-600 rounded-xl transition-colors font-medium"
+                    aria-label="Pronounce ${item.hiragana}">
+                    <!-- Speaker SVG Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.5 10H2a1 1 0 00-1 1v2a1 1 0 001 1h3.5l5.5 5.5V4.5L5.5 10z" />
+                    </svg>
+                    Listen
+                </button>
+            `;
+            
+            container.appendChild(card);
+        });
+    </script>
+</body>
+</html>
